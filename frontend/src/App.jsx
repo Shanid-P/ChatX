@@ -1,35 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 
+// Component Imports
 import LoginPage from './components/login/LoginPage';
 import Sidebar from './components/Sidebar';
 import ProtectedRoute from './routes/ProtectedRoute';
-
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import TopNav from './components/TopNav';
 import ChatArea from './components/ChatArea';
 
-
-
-function MainApp() {
-  return (
-    <>
-      <LoginPage />
-      <ToastContainer position="bottom-right" autoClose={3000} theme="colored" />
-    </>
-  );
-}
+// Toast Notifications Setup
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   // 1. Reactive states for layouts
   const [isMobile, setIsMobile] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
-
-
-// const toggleSidebar = () => {
-//   setShowSidebar(prevState => !prevState);
-// };
 
   // 2. Automatically listen to screen resizing changes
   useEffect(() => {
@@ -37,7 +23,7 @@ function App() {
       const mobileView = window.innerWidth < 768; // Tailwind 'md' breakpoint threshold
       setIsMobile(mobileView);
       
-      // Desktop should always show sidebar, mobile defaults to hidden on fresh loads
+      // Desktop should always display the sidebar; mobile defaults to hidden
       if (!mobileView) {
         setShowSidebar(true);
       } else {
@@ -52,42 +38,67 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Helper helper function to close sidebar explicitly on mobile actions
+  // Layout action handlers
   const toggleSidebar = () => setShowSidebar(!showSidebar);
+  const closeSidebarOnMobile = () => {
+    if (isMobile) setShowSidebar(false);
+  };
 
   return (
-    <BrowserRouter>
+    <HashRouter>
+      {/* Global Notification Container */}
+      <ToastContainer position="bottom-right" autoClose={3000} theme="colored" />
+
       <Routes>
-        <Route path="/*" element={<MainApp />} />
+        {/* Explicit Login Route Mapping */}
+        <Route path="/login" element={<LoginPage />} />
         
-        {/* /chats route logic */}
+        {/* Catch-all redirect: If user hits base URL, redirect to /chats */}
+        <Route path="/" element={<Navigate to="/chats" replace />} />
+        
+        {/* General Chats Dashboard view */}
         <Route
           path="/chats"
           element={
             <ProtectedRoute>
               <div className="flex flex-col h-screen w-screen bg-canvas overflow-hidden">
                 <TopNav onToggleSidebar={toggleSidebar} isMobile={isMobile} />
-                <div className="flex-1 overflow-y-auto">
-                  <Sidebar closeMobileSidebar={() => isMobile && setShowSidebar(false)} />
+                <div className="flex-1 overflow-hidden flex relative">
+                  
+                  {/* Sidebar listing container panel */}
+                  <div className="w-full md:w-[320px] xl:w-[360px] h-full flex-shrink-0 border-r border-border">
+                    <Sidebar 
+                      onClose={toggleSidebar} 
+                      closeMobileSidebar={closeSidebarOnMobile} 
+                    />
+                  </div>
+
+                  {/* Empty state fallback desktop panel placeholder */}
+                  {!isMobile && (
+                    <div className="flex-1 flex items-center justify-center bg-surface text-secondary text-sm">
+                      Select a chat room to start messaging
+                    </div>
+                  )}
+
                 </div>
               </div>
             </ProtectedRoute>
           }
         />
         
-        {/* Responsive message details layout */}
+        {/* Active Message Details view */}
         <Route
           path="/message/:chat_id"
           element={
             <ProtectedRoute>
               <div className="flex flex-col h-screen w-screen bg-canvas overflow-hidden relative">
                 
-                {/* Passing control handlers down to top Navigation header bars */}
+                {/* Fixed App Navigation Header Bar */}
                 <TopNav onToggleSidebar={toggleSidebar} isMobile={isMobile} />
 
                 <div className="flex flex-1 overflow-hidden relative">
                   
-                  {/* Backdrop Overlay filter layer for open mobile sidebars */}
+                  {/* Backdrop Overlay layer for active mobile drawer sidebar layouts */}
                   {isMobile && showSidebar && (
                     <div 
                       className="fixed inset-0 bg-black/40 z-30 transition-opacity"
@@ -95,7 +106,7 @@ function App() {
                     />
                   )}
 
-                  {/* SIDEBAR WRAPPER PANEL */}
+                  {/* Responsive Sidebar Layout drawer container */}
                   <div
                     className={`
                       ${isMobile
@@ -104,14 +115,17 @@ function App() {
                           }`
                         : 'relative w-[320px] xl:w-[360px] flex-shrink-0'
                       }
-                      bg-canvas border-r border-border h-full
+                      bg-canvas border-r border-border h-full z-30
                     `}
                   >
-                    {/* Pass click handler so tapping a chat list contact card minimizes drawer on mobile screens */}
-                    <Sidebar closeMobileSidebar={() => isMobile && setShowSidebar(false)} />
+                    {/* Fixed prop configurations passed downstream natively */}
+                    <Sidebar 
+                      onClose={toggleSidebar} 
+                      closeMobileSidebar={closeSidebarOnMobile} 
+                    />
                   </div>
 
-                  {/* CHAT WINDOW INTERFACE PANEL */}
+                  {/* Active Message Thread Interface Window */}
                   <div className={`flex-1 flex min-w-0 h-full ${isMobile && showSidebar ? 'hidden' : 'block'}`}>
                     <ChatArea onToggleSidebar={toggleSidebar}/>
                   </div>
@@ -121,8 +135,11 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Global Client-side fallback fallback path redirect targeting */}
+        <Route path="*" element={<Navigate to="/chats" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
