@@ -17,7 +17,7 @@ import { Navigate } from 'react-router-dom';
 let myUserId;
 
 
-// const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+// const API_URL = 'http://127.0.0.1:8000';
 const API_URL = 'https://chatx-r9e0.onrender.com' || 'http://127.0.0.1:8000';
 
 const WS_URL = API_URL.replace(/^http/, 'ws');
@@ -606,8 +606,8 @@ useEffect(() => {
       </div>
 
       {/* Message Input */}
-      <div className="px-4 md:px-6 py-3 border-t border-border bg-surface/80 glass-effect">
-        <div className="max-w-3xl mx-auto flex items-end gap-2">
+      <div className="px-4 md:px-6 py-3 pb-5 border-t border-border bg-surface/80 glass-effect">
+        <div className="max-w-3xl mx-auto flex items-start gap-2">
           <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-hover transition-colors text-secondary hover:text-accent flex-shrink-0">
             <i className="fa-regular fa-face-smile text-lg"></i>
           </button>
@@ -620,7 +620,7 @@ useEffect(() => {
               // onKeyDown={handleKeyDown}
               placeholder="Type a message..."
               // rows={1}
-              className="w-full bg-canvas border border-border rounded-2xl py-2.5 px-4 pr-12 text-sm text-primary placeholder-tertiary outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 transition-all resize-none max-h-32"
+              className="w-full bg-canvas border border-border rounded-2xl py-2.5 px-4 pr-12 text-sm text-primary placeholder-tertiary outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 transition-all resize-none max-h-8"
               style={{ minHeight: '42px' }}
             />
             <button className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-accent transition-colors">
