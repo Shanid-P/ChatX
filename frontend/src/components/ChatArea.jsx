@@ -20,7 +20,11 @@ let myUserId;
 // const API_URL = 'http://127.0.0.1:8000';
 const API_URL = 'https://chatx-r9e0.onrender.com' || 'http://127.0.0.1:8000';
 
-const WS_URL = API_URL.replace(/^http/, 'ws');
+// const WS_URL = API_URL.replace(/^http/, 'ws');
+
+const NEW_API = API_URL.replace(/\/+$/, '');
+
+const WS_URL = NEW_API.replace(/^http/, 'ws');
 
 
 // let contact = {
