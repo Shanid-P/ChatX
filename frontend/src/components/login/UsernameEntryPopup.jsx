@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 
 library.add(fab);
 
-
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
 // Internal Input Component aligned perfectly with your chat textareas/inputs
 const Input = ({ type, placeholder, icon, value, onChange }) => {
@@ -35,7 +35,7 @@ function UsernameEntryPopup({ onClose, onSuccess }) {
         try{
             const token = localStorage.getItem('token');
 
-            const response = await fetch('http://127.0.0.1:8000/chats',{
+            const response = await fetch(`${API_URL}/chats`,{
                 method : "POST",
                 headers : {
                     "Content-Type" : "application/json",
@@ -67,7 +67,7 @@ function UsernameEntryPopup({ onClose, onSuccess }) {
         try {
             const token = localStorage.getItem('token');
             // Using Option 1 (Query Parameter) we set up previously
-            const response = await fetch(`http://127.0.0.1:8000/users?user=${encodeURIComponent(searchQuery)}`, {
+            const response = await fetch(`${API_URL}/users?user=${encodeURIComponent(searchQuery)}`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`

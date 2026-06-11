@@ -13,6 +13,10 @@ import { validatePassword, validateEmail, validateName } from "./validateLogin.j
 
 library.add(fas);
 
+
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
 // Fallback configuration if not provided elsewhere globally
 // const API_URL = window.API_URL || "http://127.0.0.1:8000";
 
@@ -73,7 +77,8 @@ const LoginPage = ({ onLoginSuccess }) => {
         // if (!validateUserData(email, password)) return;
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/login', {
+            // const response = await fetch('http://127.0.0.1:8000/login', {
+            const response = await fetch(`${API_URL}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

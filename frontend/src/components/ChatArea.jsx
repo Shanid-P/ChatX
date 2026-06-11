@@ -16,6 +16,12 @@ import { Navigate } from 'react-router-dom';
 
 let myUserId;
 
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
+const WS_URL = API_URL.replace(/^http/, 'ws');
+
+
 // let contact = {
 //   name : "shanid",
 //   avatar : "/assets/shanid.jpg",
@@ -152,7 +158,7 @@ const [text, setText] = useState("");
     const loadMessages = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://127.0.0.1:8000/messages/${chat_id}`, {
+        const response = await fetch(`${API_URL}/messages/${chat_id}`, {
           method: "GET",
           headers: {
             // "Content-Type": "application/json",
@@ -189,7 +195,7 @@ const [text, setText] = useState("");
 
         if(data.OuserID){
 
-          const response = await fetch(`http://127.0.0.1:8000/online-users`, {
+          const response = await fetch(`${API_URL}/online-users`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`
@@ -222,7 +228,7 @@ const [text, setText] = useState("");
 
 
         if(data.OuserID && contact.status != "Online"){
-          const response = await fetch(`http://127.0.0.1:8000/user-data?chat_id=${encodeURIComponent(chat_id)}`, {
+          const response = await fetch(`${API_URL}/user-data?chat_id=${encodeURIComponent(chat_id)}`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`
@@ -277,7 +283,8 @@ const [text, setText] = useState("");
     // const token = new URLSearchParams(window.location.search).get("token");
     const token = localStorage.getItem('token');
 
-    socketRef.current = new window.WebSocket(`ws://localhost:8000/ws?token=${token}`);
+    // socketRef.current = new window.WebSocket(`ws://localhost:8000/ws?token=${token}`);
+    socketRef.current = new window.WebSocket(`${WS_URL}/ws?token=${token}`);
 
     socketRef.current.onopen = () => {
       console.log("WebSocket connected!");
