@@ -1,0 +1,230 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+/* ── Custom Theme Tokens ── */
+/* @theme {
+  --color-canvas: #EFEAE2;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #1a1a1d;
+  --color-border: #222225;
+  --color-border-light: #2a2a2e;
+  --color-accent: #E5A93C;
+  --color-accent-hover: #d49a2e;
+  --color-accent-glow: rgba(229, 169, 60, 0.15);
+  --color-accent-subtle: rgba(229, 169, 60, 0.08);
+  --color-primary: #111B21;
+  --color-secondary: #9CA3AF;
+  --color-tertiary: #6B7280;
+  --color-danger: #EF4444;
+  --color-success: #22C55E;
+  --color-online: #22C55E;
+  --color-topnav: #008069;
+} */
+
+@theme {
+  /* Layout Architecture Colors */
+  --color-canvas: #F4F7FA;          /* The main ambient light gray backdrop */
+  --color-surface: #FFFFFF;         /* Floating white panel containers */
+  --color-surface-hover: #F8FAFC;   /* Very soft slate hover state for lists */
+  --color-border: #E2E8F0;          /* Clean layout dividing gridlines */
+  --color-border-light: #F1F5F9;    /* Extra fine item borders */
+
+  /* The Signature Brand Accent (SaaS Blue) */
+  --color-accent: #0084FF;          /* Bright corporate blue for buttons/active states */
+  --color-accent-hover: #0070D9;    /* Deeper primary blue for active hover */
+  --color-accent-glow: rgba(0, 132, 255, 0.15);
+  --color-accent-subtle: #E6F3FF;   /* Soft ice-blue background for active tab highlights */
+
+  /* Chat Bubble Specifc System */
+  --color-chat-sent: #D2EDFF;       /* Soft light blue bubble for user-sent messages */
+  --color-chat-received: #F1F5F9;   /* Soft cool-gray bubble for incoming messages */
+
+  /* Premium Typography System */
+  --color-primary: #1E293B;         /* Deep slate gray for ultra-readable layout headers */
+  --color-secondary: #64748B;       /* Muted gray for message snippets, tabs, and tags */
+  --color-tertiary: #94A3B8;        /* Light slate for small timestamps and placeholders */
+
+  /* Status Indicators */
+  --color-danger: #EF4444;          /* Alert red badges */
+  --color-success: #10B981;         /* Bright emerald green for online active states */
+  --color-online: #10B981;
+}
+
+/* ── Base Styles ── */
+* {
+  /* margin: 0; */
+  /* padding: 0; */
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--color-canvas);
+  color: var(--color-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar Styling ── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-tertiary);
+}
+
+/* ── Animations ── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(229, 169, 60, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgba(229, 169, 60, 0);
+  }
+}
+
+@keyframes messagePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes typingDot {
+
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+
+  30% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.3s ease-out forwards;
+}
+
+.animate-slide-right {
+  animation: slideInRight 0.3s ease-out forwards;
+}
+
+.animate-message-pop {
+  animation: messagePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s infinite;
+}
+
+.typing-dot {
+  animation: typingDot 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* ── Utility Classes ── */
+.glass-effect {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.text-glow {
+  text-shadow: 0 0 20px rgba(229, 169, 60, 0.3);
+}
+
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
