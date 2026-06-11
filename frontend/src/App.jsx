@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
+// Component Layer Imports
 import LoginPage from './components/login/LoginPage';
 import Sidebar from './components/Sidebar';
 import ProtectedRoute from './routes/ProtectedRoute';
-
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import TopNav from './components/TopNav';
 import ChatArea from './components/ChatArea';
 
+// Global Flash Notification Styles
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
-  // 1. Reactive states for layouts
+  // 1. Reactive states for responsive mobile layout viewports
   const [isMobile, setIsMobile] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
 
-  // 2. Automatically listen to screen resizing changes
+  // 2. Automatically sync and listen to real-time window resizing thresholds
   useEffect(() => {
     const handleResize = () => {
-      const mobileView = window.innerWidth < 768; // Tailwind 'md' breakpoint threshold
+      const mobileView = window.innerWidth < 768; // Tailwind 'md' breakpoint rule
       setIsMobile(mobileView);
       
-      // Desktop should always show sidebar, mobile defaults to hidden on fresh loads
+      // Desktop layouts lock the sidebar into view; mobile defaults to hidden
       if (!mobileView) {
         setShowSidebar(true);
       } else {
@@ -29,14 +31,14 @@ function App() {
       }
     };
 
-    // Run once on mount to establish baseline layout sizing
+    // Calculate initial dimensions immediately on execution mount
     handleResize();
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Helper helper function to change sidebar states smoothly
+  // UI Action toggle helper handlers
   const toggleSidebar = () => setShowSidebar(!showSidebar);
   const closeSidebarOnMobile = () => {
     if (isMobile) setShowSidebar(false);
@@ -44,17 +46,17 @@ function App() {
 
   return (
     <BrowserRouter>
-      {/* Global Notification Container */}
+      {/* Toast Portal Container mounted once globally */}
       <ToastContainer position="bottom-right" autoClose={3000} theme="colored" />
 
       <Routes>
-        {/* Clean Login / Root Route Mapping */}
+        {/* 1. Base URL path now lands directly on the Login view layout */}
+        <Route path="/" element={<LoginPage />} />
+
+        {/* 2. Retain explicit route registration for general navigation triggers */}
         <Route path="/login" element={<LoginPage />} />
         
-        {/* Catch-all redirect: If user hits standard '/', kick them to /chats */}
-        <Route path="/" element={<Navigate to="/chats" replace />} />
-        
-        {/* /chats route logic */}
+        {/* Main Dashboard /chats Overview Routing Block */}
         <Route
           path="/chats"
           element={
@@ -63,7 +65,7 @@ function App() {
                 <TopNav onToggleSidebar={toggleSidebar} isMobile={isMobile} />
                 <div className="flex-1 overflow-hidden flex relative">
                   
-                  {/* Sidebar wrapper instance for basic listings view */}
+                  {/* Sidebar list indexing panel container */}
                   <div className="w-full md:w-[320px] xl:w-[360px] h-full flex-shrink-0 border-r border-border">
                     <Sidebar 
                       onClose={toggleSidebar} 
@@ -71,7 +73,7 @@ function App() {
                     />
                   </div>
 
-                  {/* Empty state desktop message panel wrapper helper fallback view */}
+                  {/* Empty fallback display slot rendered on wide monitors */}
                   {!isMobile && (
                     <div className="flex-1 flex items-center justify-center bg-surface text-secondary text-sm">
                       Select a chat room to start messaging
@@ -84,19 +86,19 @@ function App() {
           }
         />
         
-        {/* Responsive message details layout */}
+        {/* Live Conversation Dynamic Room Routing Block */}
         <Route
           path="/message/:chat_id"
           element={
             <ProtectedRoute>
               <div className="flex flex-col h-screen w-screen bg-canvas overflow-hidden relative">
                 
-                {/* Passing control handlers down to top Navigation header bars */}
+                {/* Header Action Bar Wrapper */}
                 <TopNav onToggleSidebar={toggleSidebar} isMobile={isMobile} />
 
                 <div className="flex flex-1 overflow-hidden relative">
                   
-                  {/* Backdrop Overlay filter layer for open mobile sidebars */}
+                  {/* Backdrop shroud modal layer triggered on responsive layouts */}
                   {isMobile && showSidebar && (
                     <div 
                       className="fixed inset-0 bg-black/40 z-30 transition-opacity"
@@ -104,7 +106,7 @@ function App() {
                     />
                   )}
 
-                  {/* SIDEBAR WRAPPER PANEL */}
+                  {/* SLIDING SIDEBAR DRAWER ACTION WRAPPER */}
                   <div
                     className={`
                       ${isMobile
@@ -116,14 +118,13 @@ function App() {
                       bg-canvas border-r border-border h-full z-30
                     `}
                   >
-                    {/* Fixed prop connections here */}
                     <Sidebar 
                       onClose={toggleSidebar} 
                       closeMobileSidebar={closeSidebarOnMobile} 
                     />
                   </div>
 
-                  {/* CHAT WINDOW INTERFACE PANEL */}
+                  {/* CENTRAL MESSAGING CORE ENGINE INTERFACE */}
                   <div className={`flex-1 flex min-w-0 h-full ${isMobile && showSidebar ? 'hidden' : 'block'}`}>
                     <ChatArea onToggleSidebar={toggleSidebar}/>
                   </div>
@@ -134,8 +135,8 @@ function App() {
           }
         />
 
-        {/* Catch-all 404 Route handling within React Router ecosystem */}
-        <Route path="*" element={<Navigate to="/chats" replace />} />
+        {/* Global wildcard pathing failure logic fallback handler */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
