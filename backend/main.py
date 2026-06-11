@@ -92,6 +92,7 @@ origins = [
     "http://localhost:5173",  # Your local Vite React app
     "http://localhost:5174",  # Your local Vite React app
     "http://127.0.0.1:5173",
+    "https://chatwithchatx.vercel.app"
 ]
 
 # 2. Add the CORS middleware to your FastAPI app

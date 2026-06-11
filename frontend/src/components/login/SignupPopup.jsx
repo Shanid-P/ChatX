@@ -10,7 +10,7 @@ library.add(fas);
 
 // Fallback configuration for the API base URL
 // const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-const API_URL = 'https://chatx-r9e0.onrender.com/' || 'http://127.0.0.1:8000';
+const API_URL = 'https://chatx-r9e0.onrender.com' || 'http://127.0.0.1:8000';
 
 function validateUserData(name, email, password){
     if(validateName(name) != null){

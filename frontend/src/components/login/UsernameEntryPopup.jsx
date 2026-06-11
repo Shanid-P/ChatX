@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 library.add(fab);
 
 // const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-const API_URL = 'https://chatx-r9e0.onrender.com/' || 'http://127.0.0.1:8000';
+const API_URL = 'https://chatx-r9e0.onrender.com' || 'http://127.0.0.1:8000';
 
 // Internal Input Component aligned perfectly with your chat textareas/inputs
 const Input = ({ type, placeholder, icon, value, onChange }) => {

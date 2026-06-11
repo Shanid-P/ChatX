@@ -16,7 +16,7 @@ library.add(fas);
 
 
 // const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-const API_URL = 'https://chatx-r9e0.onrender.com/' || 'http://127.0.0.1:8000';
+const API_URL = 'https://chatx-r9e0.onrender.com' || 'http://127.0.0.1:8000';
 
 // Fallback configuration if not provided elsewhere globally
 // const API_URL = window.API_URL || "http://127.0.0.1:8000";
