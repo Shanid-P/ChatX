@@ -1,5 +1,6 @@
 fastapi
-uvicorn
+uvicorn[standard]>=0.22.0
+websockets>=11.0.3
 sqlalchemy
 pydantic
 python-jose[cryptography]
