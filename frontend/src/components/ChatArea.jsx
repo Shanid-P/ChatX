@@ -230,7 +230,7 @@ const [text, setText] = useState("");
         }
 
 
-        if(data.OuserID && status != "Online"){
+        if(data.OuserID && status === "Offline"){
           const response = await fetch(`${API_URL}/user-data?chat_id=${encodeURIComponent(chat_id)}`, {
           method: "GET",
           headers: {
