@@ -12,10 +12,85 @@ import ChatArea from './components/ChatArea';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+let contactData;
+
+// const API_URL = 'http://127.0.0.1:8000';
+const API_URL = 'https://chatx-r9e0.onrender.com' || 'http://127.0.0.1:8000';
+
+
+export const fetchChatList = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        // const response = await fetch('http://127.0.0.1:8000/chat-list', {
+        const response = await fetch(`${API_URL}/chat-list`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        contactData = await response.json();
+
+        return contactData;
+
+        // return data;
+      }catch (error) {
+        console.error("Error:", error);
+        // Safe check for toast to prevent application crashes
+        // if (typeof toast !== 'undefined') {
+        //   toast.error("Server error. Please try again.");
+        // }
+      }
+    }
+
+
+
+
 function App() {
   // 1. Reactive states for responsive mobile layout viewports
   const [isMobile, setIsMobile] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
+
+  // const [chats, setChats] = useState([]);
+  const [contacts, setContacts] = useState([]);
+
+
+
+
+
+   useEffect(() => {
+        
+        const getdata = async () => {
+           const data = await fetchChatList();
+          console.log("Backend response of chat list:", data);
+
+          if (data && Array.isArray(data.status)) {
+            const formattedContacts = data.status.map((item) => ({
+              id: item.chat_id,
+              username: item.username,
+              status: 'online',
+              avatar: '/assets/shanid.jpg',
+              lastMsg : item.last_message,
+              unreadCount : item.unread
+            }));
+
+            setContacts(formattedContacts);
+          }
+        }
+
+    
+    getdata(); 
+        
+  }, []);
+
+
+
+
 
   // 2. Automatically sync and listen to real-time window resizing thresholds
   useEffect(() => {
@@ -70,6 +145,8 @@ function App() {
                     <Sidebar 
                       onClose={toggleSidebar} 
                       closeMobileSidebar={closeSidebarOnMobile} 
+                      contacts={contacts}
+                      setContacts={setContacts}
                     />
                   </div>
 
@@ -121,12 +198,15 @@ function App() {
                     <Sidebar 
                       onClose={toggleSidebar} 
                       closeMobileSidebar={closeSidebarOnMobile} 
+                      contacts={contacts}
+                      setContacts={setContacts}
                     />
                   </div>
 
                   {/* CENTRAL MESSAGING CORE ENGINE INTERFACE */}
                   <div className={`flex-1 flex min-w-0 h-full ${isMobile && showSidebar ? 'hidden' : 'block'}`}>
-                    <ChatArea onToggleSidebar={toggleSidebar}/>
+                    <ChatArea onToggleSidebar={toggleSidebar} contacts={contacts}
+                      setContacts={setContacts}/>
                   </div>
 
                 </div>

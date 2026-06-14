@@ -1,92 +1,54 @@
 'use client'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {  getLastMessage, getUnreadCount } from '../data/mockData';
 import { Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import UsernameEntryPopup from './login/UsernameEntryPopup'
 
-let contactData;
+
+let myUserId;
+
+import { jwtDecode } from "jwt-decode";
 
 // const API_URL = 'http://127.0.0.1:8000';
 const API_URL = 'https://chatx-r9e0.onrender.com' || 'http://127.0.0.1:8000';
 
 
 
- export const fetchChatList = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        // const response = await fetch('http://127.0.0.1:8000/chat-list', {
-        const response = await fetch(`${API_URL}/chat-list`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        contactData = await response.json();
-
-        return contactData;
-
-        // return data;
-      }catch (error) {
-        console.error("Error:", error);
-        // Safe check for toast to prevent application crashes
-        // if (typeof toast !== 'undefined') {
-        //   toast.error("Server error. Please try again.");
-        // }
-      }
-    }
+ 
 
 
 
-export default function Sidebar({ activeChat, onClose }) {
+export default function Sidebar({ activeChat, onClose, contacts, setContacts }) {
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [contacts, setContacts] = useState([]);
+  // const [contacts, setContacts] = useState([]);
   const [findUserPopup, handleFindUsers] = useState(false);
+  const [isActive, setActive] = useState();
 
   const navigate = useNavigate();
 
+  console.log('sie bar contacts', contacts)
   const filteredContacts = contacts.filter((contact) =>
     contact.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
  
 
-  useEffect(() => {
-        
-        const getdata = async () => {
-           const data = await fetchChatList();
-          console.log("Backend response of chat list:", data);
-
-          if (data && Array.isArray(data.status)) {
-            const formattedContacts = data.status.map((item) => ({
-              id: item.chat_id,
-              username: item.username,
-              status: 'online',
-              avatar: '/assets/shanid.jpg',
-              lastMsg : item.last_message
-            }));
-
-            setContacts(formattedContacts);
-          }
-        }
-
-    
-    getdata(); 
-        
-  }, []);
+ 
 
   const onSelectChat = (chatID) =>{
     console.log(chatID);
     navigate(`/message/${chatID}`);
     console.log('navigated')
   }
+
+
+
+
+
+
+
 
   return (
     <div className="flex flex-col h-full bg-surface p-5">
@@ -143,18 +105,20 @@ export default function Sidebar({ activeChat, onClose }) {
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto px-2">
         {filteredContacts.map((contact, index) => {
-          const lastMessage = getLastMessage(contact.id);
-          const unreadCount = getUnreadCount(contact.id);
-          const isActive = activeChat === contact.id;
+          // const lastMessage = getLastMessage(contact.id);
+          // const unreadCount = getUnreadCount(contact.id);
+          // const isActive = activeChat === contact.id;
 
           return (
             <button
               key={contact.id}
-              onClick={() => onSelectChat(contact.id)}
-              className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 mb-0.5 group animate-fade-in ${
-                isActive
+              onClick={() => {onSelectChat(contact.id);
+                setActive(contact.id)
+              }}
+              className={`w-full flex items-center gap-3 px-3 py-3 rounded-xs border-b border-gray-200 transition-all duration-200 mb-0.5 group animate-fade-in ${
+                isActive === contact.id
                   ? 'bg-accent/10 border border-accent/20'
-                  : 'hover:bg-surface-hover border border-transparent'
+                  : 'hover:bg-surface-hover'
               }`}
               style={{ animationDelay: `${index * 50}ms` }}
             >
@@ -179,7 +143,8 @@ export default function Sidebar({ activeChat, onClose }) {
               </div>
 
               {/* Info */}
-              <div className="flex-1 min-w-0 text-left">
+              <div className="flex w-full min-w-0 text-left items-center">
+                <div className='flex flex-col w-full'>
                 <div className="flex items-center justify-between">
                   <span
                     className={`text-sm font-medium truncate ${
@@ -188,11 +153,11 @@ export default function Sidebar({ activeChat, onClose }) {
                   >
                     {contact.username}
                   </span>
-                  <span className="text-[10px] text-tertiary flex-shrink-0 ml-2">
+                  {/* <span className="text-[10px] text-tertiary flex-shrink-0 ml-2">
                     {lastMessage?.timestamp}
-                  </span>
+                  </span> */}
                 </div>
-                <div className="flex items-center justify-between mt-0.5">
+                <div className="flex items-center mt-0.5">
                   <p className="text-xs text-secondary truncate pr-2">
                     {contact.lastMsg && (
                       <i className="fa-solid fa-check-double text-accent/60 mr-0.5 text-[8px]"></i>
@@ -206,11 +171,15 @@ export default function Sidebar({ activeChat, onClose }) {
                       {contact.lastMsg}
                     {/* // } */}
                   </p>
-                  {unreadCount > 0 && (
+                  
+                </div>
+                </div>
+                <div className="flex">
+                  {contact.unreadCount > 0 && (
                     <span className="flex-shrink-0 min-w-[18px] h-[18px] flex items-center justify-center bg-accent text-canvas text-[10px] font-bold rounded-full px-1">
-                      {unreadCount}
+                      {contact.unreadCount}
                     </span>
-                  )}
+                   )} 
                 </div>
               </div>
             </button>

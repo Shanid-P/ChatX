@@ -385,7 +385,7 @@ def get_chats(
     chats = db.query(ChatMember)\
         .filter(ChatMember.user_id == user.id)\
         .all()
-    
+            
     results = []
     
     for i in chats:
@@ -401,6 +401,7 @@ def get_chats(
             .filter(User.id == other_user.user_id)\
             .first()
             
+            
         #to get last message
         lastMsgRow = (db.query(Message)
             .filter(Message.chat_id == i.chat_id)
@@ -413,13 +414,21 @@ def get_chats(
         else:
             lastMsg = lastMsgRow.content
     
+        #to get no of unread msgs
+        unread_msgs = db.query(Message)\
+            .filter(Message.chat_id == i.chat_id,
+                    Message.sender_id != user.id,
+                    Message.is_read == False)\
+            .count()
+        
         #--------------------------
         
         results.append({
             "chat_id" : i.chat_id,
             "user_id" : other_user.user_id,
             "username" : username.username,
-            "last_message" : lastMsg
+            "last_message" : lastMsg,
+            "unread" : unread_msgs
         })
     
     return {"status" : results}
@@ -517,6 +526,17 @@ def get_messages(chat_id: int,
     messages = db.query(Message)\
         .filter(Message.chat_id == chat_id)\
         .all()
+        
+    # making all messages as read
+    db.query(Message)\
+        .filter(Message.chat_id == chat_id,
+                Message.sender_id != user.id,
+                Message.is_read == False)\
+        .update(
+             {"is_read" : True},
+             synchronize_session=False
+        )
+    db.commit()
     
     results = []
     
@@ -672,7 +692,8 @@ async def websocket_endpoint(
             new_message = Message(
                 content=message,
                 sender_id=sender_id,
-                chat_id=chat_id
+                chat_id=chat_id,
+                is_read = False
             )
 
             db.add(new_message)

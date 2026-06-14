@@ -16,6 +16,7 @@ import { Navigate } from 'react-router-dom';
 
 let myUserId;
 
+import { fetchChatList } from "../App";
 
 // const API_URL = 'http://127.0.0.1:8000';
 const API_URL = 'https://chatx-r9e0.onrender.com' || 'http://127.0.0.1:8000';
@@ -24,13 +25,6 @@ const NEW_API = API_URL.replace(/\/+$/, '');
 
 const WS_URL = NEW_API.replace(/^http/, 'ws');
 
-
-// let contact = {
-//   name : "shanid",
-//   avatar : "/assets/shanid.jpg",
-//   status : "onlines",
-//   lastSeen : "todays",
-// }
 
 const formatTime = (isoString) => {
   // if (!isoString || isoString === "Offline") return "Offline";
@@ -45,7 +39,7 @@ const formatTime = (isoString) => {
 
 
 
-export default function ChatArea({ onToggleSidebar, onToggleContactInfo }) {
+export default function ChatArea({ onToggleSidebar, onToggleContactInfo, contacts, setContacts }) {
 
   const navigate = useNavigate();
 
@@ -60,6 +54,41 @@ export default function ChatArea({ onToggleSidebar, onToggleContactInfo }) {
     lastSeen: 'today',
     OuserID : ''
   });
+
+
+  const notificationSent = new Audio("/assets/sent.mp3");
+  const notificationRecieved = new Audio("/assets/recieved.mp3");
+
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
+
+
+
+
+
+
+  const reloadChatList = async () => {
+
+  // await fetchChats();
+      const data = await fetchChatList();
+
+      const formattedContacts = data.status.map(item => ({
+          id: item.chat_id,
+          username: item.username,
+          status: "online",
+          avatar: "/assets/shanid.jpg",
+          lastMsg: item.last_message,
+          unreadCount: item.unread
+      }));
+
+      setContacts(formattedContacts);
+}
+
 
   // const [OuserID, setOUserID] = useState('')
 
@@ -286,8 +315,8 @@ const [text, setText] = useState("");
     // const token = new URLSearchParams(window.location.search).get("token");
     const token = localStorage.getItem('token');
 
-    // socketRef.current = new window.WebSocket(`ws://localhost:8000/ws?token=${token}`);
-    socketRef.current = new window.WebSocket(`${WS_URL}/ws?token=${token}`);
+    socketRef.current = new window.WebSocket(`ws://localhost:8000/ws?token=${token}`);
+    // socketRef.current = new window.WebSocket(`${WS_URL}/ws?token=${token}`);
 
     socketRef.current.onopen = () => {
       console.log("WebSocket connected!");
@@ -305,6 +334,10 @@ const [text, setText] = useState("");
 
       console.log("Received:", data);
 
+      // setContacts((prev) => {
+
+      // })
+
       if (data.type === "sent") {
         console.log("Message saved:", data.message_id);
         if(data.message){
@@ -316,11 +349,15 @@ const [text, setText] = useState("");
               }
           ])
         }
+        notificationSent.play().catch((err) => {
+          console.log("Audio blocked:", err);
+        });
         return;
       }
-
+      console.log("this is current" ,data.chat_id)
       //coming data
       if(data.message){
+        if(data.chat_id === chat_id){
         setMessages((prev) => [
             ...prev, 
             {
@@ -328,17 +365,27 @@ const [text, setText] = useState("");
               message : data.message
             }
         ])
+        reloadChatList()
       }
+    }
 
       // console.log("list of msgs", messages)
       console.log("Sender:", data.sender_id);
       console.log("Message:", data.message);
+
+      notificationRecieved.play().catch((err) => {
+        console.log("Audio blocked:", err);
+      });
+
+
     };
 
+    // sockentRef.current.onChange() =>
 
     socketRef.current.onclose = () => {
       console.log("Disconnected");
     };
+
 
 
     return () => {
@@ -602,8 +649,8 @@ useEffect(() => {
             </div>
           )} */}
 
-          {/* <div ref={messagesEndRef} /> */}
-          <div />
+          <div ref={bottomRef} />
+          {/* <div /> */}
         </div>
       </div>
 

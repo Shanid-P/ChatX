@@ -56,6 +56,8 @@ class Message(Base):
         ForeignKey("chats.id")
     )
     
+    is_read = Column(Boolean, nullable=True, default=False)
+    
 # class Chat(Base):
     
 #     __tablename__ = "chats"
