@@ -315,8 +315,8 @@ const [text, setText] = useState("");
     // const token = new URLSearchParams(window.location.search).get("token");
     const token = localStorage.getItem('token');
 
-    socketRef.current = new window.WebSocket(`ws://localhost:8000/ws?token=${token}`);
-    // socketRef.current = new window.WebSocket(`${WS_URL}/ws?token=${token}`);
+    // socketRef.current = new window.WebSocket(`ws://localhost:8000/ws?token=${token}`);
+    socketRef.current = new window.WebSocket(`${WS_URL}/ws?token=${token}`);
 
     socketRef.current.onopen = () => {
       console.log("WebSocket connected!");

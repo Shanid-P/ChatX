@@ -104,7 +104,9 @@ export default function Sidebar({ activeChat, onClose, contacts, setContacts }) 
 
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto px-2">
-        {filteredContacts.map((contact, index) => {
+        {filteredContacts.length === 0 ? (
+  <p>please refresh</p>
+) : ( filteredContacts.map((contact, index) => {
           // const lastMessage = getLastMessage(contact.id);
           // const unreadCount = getUnreadCount(contact.id);
           // const isActive = activeChat === contact.id;
@@ -184,7 +186,7 @@ export default function Sidebar({ activeChat, onClose, contacts, setContacts }) 
               </div>
             </button>
           );
-        })}
+        }))}
       </div>
 
       {/* Bottom Action */}
